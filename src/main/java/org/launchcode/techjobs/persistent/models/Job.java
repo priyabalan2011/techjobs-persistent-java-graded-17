@@ -1,9 +1,8 @@
 package org.launchcode.techjobs.persistent.models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -11,28 +10,44 @@ import java.util.List;
 public class Job extends AbstractEntity {
 
 
-    private String employer;
+   // private String employers;
     private String skills;
 
+    @ManyToOne
+    @JoinColumn(name="employer_id")
+   // @NotNull(message = "employer is required")
+    private Employer employer;
 
     public Job() {
     }
 
     // Initialize the id and value fields.
-    public Job(String anEmployer, String someSkills) {
-        super();
-        this.employer = anEmployer;
+    public Job( String someSkills,Employer employer) {
+        //super();
+        this.employer = employer;
         this.skills = someSkills;
     }
 
     // Getters and setters.
     
 
-    public String getEmployer() {
+//    public String getEmployer() {
+//        return employers;
+//    }
+//
+//    public void setEmployer(String employer) {
+//        this.employers = employer;
+//    }
+
+  //  public String getEmployers() {return employers;}
+
+   // public void setEmployers(String employers) {this.employers = employers;}
+
+    public Employer getEmployer() {
         return employer;
     }
 
-    public void setEmployer(String employer) {
+    public void setEmployer(Employer employer) {
         this.employer = employer;
     }
 
