@@ -36,7 +36,7 @@ public class HomeController {
     public String index(Model model) {
 
         model.addAttribute("title", "MyJobs");
-        model.addAttribute("jobs",employerRepository.findAll());
+        model.addAttribute("jobs",jobRepository.findAll());
 
         return "index";
     }
@@ -52,30 +52,45 @@ public class HomeController {
 
     @PostMapping("add")
     public String processAddJobForm( @ModelAttribute @Valid Job newJob,
-                                       Errors errors, Model model,@RequestParam int employerId) {
+                                       Errors errors, Model model,@RequestParam int employerId,@RequestParam List<Integer> skills) {
 
         if (errors.hasErrors()) {
-	    model.addAttribute("title", "Add Job");
+	        model.addAttribute("title", "Add Job");
+            model.addAttribute("employers",employerRepository.findAll());
+            model.addAttribute("skills",skillRepository.findAll());
             return "add";
         }
         Optional<Employer> result = employerRepository.findById(employerId);
-        if(result.isEmpty())
-        {
-            //model.addAttribute("employers",employerRepository.findById(employerId));
-        }
-        else {
+        if(result.isPresent()) {
             Employer employer = result.get();
-            //model.addAttribute("job", job);
             newJob.setEmployer(employer);
-            model.addAttribute("employers",employer);
+        }
+        if(skills != null) {
+                List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+                newJob.setSkills(skillObjs);
+        }
             jobRepository.save(newJob);
 
-        }
+
         return "redirect:";
     }
 
     @GetMapping("view/{jobId}")
-    public String displayViewJob(Model model, @PathVariable int jobId) {
+    public String displayViewJob( Model model, @PathVariable int jobId) {
+
+        Optional<Job> result = jobRepository.findById(jobId);
+        if(result.isEmpty())
+        {
+            model.addAttribute("title","No records found");
+        }
+        else {
+            Job jobs=result.get();
+            model.addAttribute("job", jobs);
+            model.addAttribute("employer",jobs.getEmployer());
+
+           model.addAttribute("skills", jobs.getSkills());
+           // model.addAttribute("employers", employerRepository.findAll());
+        }
 
             return "view";
     }
